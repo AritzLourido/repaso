@@ -27,10 +27,15 @@
   <!-- Mediante el ngFor leemos pregunta por pregunta. 
   -- Controlamos el index de cada pregunta, para realizar diferentes gestiones con este. 
   -->
-<ion-card>
-  <ion-card-header>
-    <ion-card-title></ion-card-title>
-  </ion-card-header>
+<ion-list *ngFor="let pregunta of listaPreguntas">
+  <ion-label>{{pregunta}}</ion-label>
+</ion-list>
+
+
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title></ion-card-title>
+    </ion-card-header>
 
   <ion-card-content>
     <!-- Por cada pregunta, mostramos las posibles respuestas de forma aleatoria.
@@ -63,5 +68,4 @@
     </ion-button>
   </ion-col>
 </ion-row>
-</ion-content>
 

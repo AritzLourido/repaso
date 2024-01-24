@@ -8,8 +8,32 @@
 </ion-header>
 
 <ion-content class="ion-padding" [fullscreen]="true">
-  <!-- Gestionar el control para mostrar un componente u otro. 
+  <!-- Gestionar el control para mostrar un componente u otro.
     -- Utilizaremos un ion-card por cada componente.
     -->
+    <ion-segment value="default">
+    <ion-segment-button value="introduccion"  (ionChange)="segmentChanged($event)" [(ngModel)]="segment" >
+      <ion-label>INTRODUCCION</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="preguntas">
+      <ion-label>PREGUNTAS</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="ranking">
+      <ion-label>RANKING</ion-label>
+    </ion-segment-button>
+  </ion-segment>
+  
+
+  <ion-segment>
+    <ion-segment-button value="first">
+      <ion-label>First</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="second">
+      <ion-label>Second</ion-label>
+    </ion-segment-button>
+  </ion-segment>
+  
+
+    <ion-card> </ion-card>
 </ion-content>
 

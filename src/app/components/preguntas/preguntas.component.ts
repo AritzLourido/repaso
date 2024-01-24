@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 //Añadir los imports necesarios
 
+
 @Component({
   selector: 'app-preguntas',
   templateUrl: './preguntas.component.html',
@@ -8,10 +9,14 @@ import { Component, OnInit } from '@angular/core';
 })
 export class PreguntasComponent implements OnInit {
 
+
+  
+
   /*Podéis hacer uso de estas variables de referencia, modificarlas o incluso crear más si véis necesario*/
 
   //Guardar la lista de todas las preguntas. Preguntas[] dependerá de lo que se haya puesto en la interface
   listaPreguntas: Preguntas[] = [];
+
   //Guardará todas las respuestas que se han elegido
   respuestasSeleccionadas: string[] = [];
   //Guardará las respuestas con el orden aleatorio
@@ -23,10 +28,13 @@ export class PreguntasComponent implements OnInit {
   //Gestionará el visualizado del botón Volver a Jugar.
   mostrarBotonesAdicionales: boolean = false;
 
-  constructor() {}
+  constructor() {
+
+
+  }
 
   ngOnInit() {
-
+  this.cargarPreguntas();
   }
 
   private cargarPreguntas() {
