@@ -11,7 +11,7 @@ export class IntroduccionComponent  implements OnInit {
 
   ngOnInit() {}
 
-  // @Input() titulo: string = '';
-  // @Input() descripcion: string = '';
-  // @Input() imagenUrl: string = '';
+  @Input() titulo: string = '';
+  @Input() descripcion: string = '';
+  @Input() imagenUrl: string = '';
 }

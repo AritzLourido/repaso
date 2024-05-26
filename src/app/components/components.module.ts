@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { IntroduccionComponent } from './introduccion/introduccion.component';
 import { PreguntasComponent } from './preguntas/preguntas.component';
 import { RankingComponent } from './ranking/ranking.component';
-import { IonApp} from '@ionic/angular';
+import { IonApp, IonicModule} from '@ionic/angular';
 
 
 
@@ -16,7 +16,7 @@ import { IonApp} from '@ionic/angular';
   ],
   imports: [
     CommonModule,
-    IonApp
+    IonicModule
   ],
   exports: [
     IntroduccionComponent,
