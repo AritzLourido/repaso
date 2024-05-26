@@ -15,7 +15,7 @@ export class PreguntasComponent implements OnInit {
   /*Podéis hacer uso de estas variables de referencia, modificarlas o incluso crear más si véis necesario*/
 
   //Guardar la lista de todas las preguntas. Preguntas[] dependerá de lo que se haya puesto en la interface
-  listaPreguntas: Preguntas[] = [];
+//  listaPreguntas: Preguntas[] = [];
 
   //Guardará todas las respuestas que se han elegido
   respuestasSeleccionadas: string[] = [];
@@ -48,12 +48,12 @@ export class PreguntasComponent implements OnInit {
          * Creamos un array con los 3 valores que vienen en "incorrect_answer" + la "correct_answer".
          * Si vemos la interface, podemos observar que --> correct_answer: string; incorrect_answers: string[];
         */
-        const respuestasAleatorias = this.mezclarOrdenArray([...pregunta.incorrect_answers, pregunta.correct_answer]);
+ //       const respuestasAleatorias = this.mezclarOrdenArray([...pregunta.incorrect_answers, pregunta.correct_answer]);
         /* Modificamos la interface para que pueda guardar un string[] de las respuestas ordenadas aleatoriamente.
          * Con los valores que vienen en la API, rellenamos pregunta y a ello le añadimos respuestasAleatorias, para que 
          * todos los valores de la interface estén rellenas.
          */
-        return { ...pregunta, respuestasAleatorias };
+  //      return { ...pregunta, respuestasAleatorias };
 
 
   }
