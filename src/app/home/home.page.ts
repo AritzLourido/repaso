@@ -30,8 +30,8 @@ throw new Error('Method not implemented.');
   //inicializamos el segmento con su valor inicial
   this.segment = 'introduccion';
   
-  this.titulo = 'Bienvenido a BIRTRIVIA';
-  this.descripcion = 'Aquí va la descripcion del juego';
+  this.titulo = 'Bienvenido a Trivia App';
+  this.descripcion = 'Explora pregutnas divertidas y desafiantes. ¡Pon a prueba tu conocimiento!';
   this.imagenUrl = 'assets/icon/trivia.jpg';
 
   //Gestionamos el cambio de segmentos

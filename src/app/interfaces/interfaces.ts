@@ -1,10 +1,10 @@
-interface Preguntas {
+export interface PreguntasTodas {
     response_code: number;
-    results: Result[];
-    pregunta: string[];
+    results: Pregunta[];
+    // pregunta: string[];
   }
 
-  interface Result {
+  export interface Pregunta {
     type: string;
     difficulty: string;
     category: string;

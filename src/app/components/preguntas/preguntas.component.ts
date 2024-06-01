@@ -1,6 +1,8 @@
+import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
+import { Observable } from 'rxjs';
 //Añadir los imports necesarios
-
+import {Pregunta, PreguntasTodas} from './../../interfaces/interfaces'
 
 @Component({
   selector: 'app-preguntas',
@@ -9,13 +11,12 @@ import { Component, OnInit } from '@angular/core';
 })
 export class PreguntasComponent implements OnInit {
 
-
-  
+  pregunta: Pregunta[] = [];
 
   /*Podéis hacer uso de estas variables de referencia, modificarlas o incluso crear más si véis necesario*/
 
   //Guardar la lista de todas las preguntas. Preguntas[] dependerá de lo que se haya puesto en la interface
-//  listaPreguntas: Preguntas[] = [];
+   listaPreguntas: Pregunta[] = [];
 
   //Guardará todas las respuestas que se han elegido
   respuestasSeleccionadas: string[] = [];
@@ -28,7 +29,8 @@ export class PreguntasComponent implements OnInit {
   //Gestionará el visualizado del botón Volver a Jugar.
   mostrarBotonesAdicionales: boolean = false;
 
-  constructor() {
+ 
+  constructor(private consultaRest: HttpClient) {
 
 
   }
@@ -38,25 +40,20 @@ export class PreguntasComponent implements OnInit {
   }
 
   private cargarPreguntas() {
-    //Llamamos al API mediante un observable
-    
-    //Suscripción al observable
- 
-      //Recorremos la lista de preguntas
+    // Llamamos al API mediante un observable
+    let observableRest: Observable<any> = this.consultaRest.get<any>("https://opentdb.com/api.php?amount=10&difficulty=easy&type=multiple");
 
-        /* Mezclamos el orden del array:
-         * Creamos un array con los 3 valores que vienen en "incorrect_answer" + la "correct_answer".
-         * Si vemos la interface, podemos observar que --> correct_answer: string; incorrect_answers: string[];
-        */
- //       const respuestasAleatorias = this.mezclarOrdenArray([...pregunta.incorrect_answers, pregunta.correct_answer]);
-        /* Modificamos la interface para que pueda guardar un string[] de las respuestas ordenadas aleatoriamente.
-         * Con los valores que vienen en la API, rellenamos pregunta y a ello le añadimos respuestasAleatorias, para que 
-         * todos los valores de la interface estén rellenas.
-         */
-  //      return { ...pregunta, respuestasAleatorias };
-
-
-  }
+    // Suscripción al observable
+    observableRest.subscribe((data: PreguntasTodas) => {
+      // Recorremos la lista de preguntas
+      data.results.forEach((pregunta: Pregunta) => {
+        // Mezclamos el orden del array
+        pregunta.respuestasAleatorias = this.mezclarOrdenArray([...pregunta.incorrect_answers, pregunta.correct_answer]);
+        // Añadimos la pregunta a la lista de preguntas
+        this.listaPreguntas.push(pregunta);
+      });
+    });
+}
 
   //Este método se utiliza para mezclar el orden del array
   mezclarOrdenArray(array: any[]): any[] {
@@ -82,9 +79,25 @@ export class PreguntasComponent implements OnInit {
   /* Gestionará el click del botón
    * Tendrá que recibir los parámetros necesarios para cargar los array botonSeleccionadoPreguntaIndex y respuestasSeleccionadas
    */
-  seleccionarRespuesta() {
+  seleccionarRespuesta(preguntaIndex: number, respuestaIndex: number) {
+    // Verificar si la respuesta ya fue seleccionada
+    if (!this.botonSeleccionadoPreguntaIndex.includes(preguntaIndex)) {
+      // Añadir el index de la pregunta a la lista de preguntas seleccionadas
+      this.botonSeleccionadoPreguntaIndex.push(preguntaIndex);
+    }
+  
+    // Obtener la pregunta actual
+    const pregunta = this.listaPreguntas[preguntaIndex];
+  
+    // Obtener la respuesta seleccionada
+    const respuestaSeleccionada = pregunta.respuestasAleatorias[respuestaIndex];
+  
+    // Guardar la respuesta seleccionada
+    this.respuestasSeleccionadas[preguntaIndex] = respuestaSeleccionada;
 
+    console.log("Respuesta seleccionada:" + respuestaSeleccionada);
   }
+  
 
   // Método que gestiona la lógica para guardar resultados cuando se pulse dicho botón
   guardarResultados() {

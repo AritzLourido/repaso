@@ -88,9 +88,22 @@ export class PreguntasHomePage implements OnInit {
   /* Gestionará el click del botón
    * Tendrá que recibir los parámetros necesarios para cargar los array botonSeleccionadoPreguntaIndex y respuestasSeleccionadas
    */
-  seleccionarRespuesta() {
-
+seleccionarRespuesta(preguntaIndex: number, respuestaIndex: number) {
+  // Verificar si la respuesta ya fue seleccionada
+  if (!this.botonSeleccionadoPreguntaIndex.includes(preguntaIndex)) {
+    // Añadir el index de la pregunta a la lista de preguntas seleccionadas
+    this.botonSeleccionadoPreguntaIndex.push(preguntaIndex);
   }
+
+  // Obtener la pregunta actual
+  const pregunta = this.listaPreguntas[preguntaIndex];
+
+  // Obtener la respuesta seleccionada
+  const respuestaSeleccionada = pregunta.respuestasAleatorias[respuestaIndex];
+
+  // Guardar la respuesta seleccionada
+  this.respuestasSeleccionadas[preguntaIndex] = respuestaSeleccionada;
+}
 
   // Método que gestiona la lógica para guardar resultados cuando se pulse dicho botón
   guardarResultados() {

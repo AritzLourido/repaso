@@ -1,3 +1,4 @@
+<!DOCTYPE innerHTML>
 <!-- Mediante el ngFor leemos pregunta por pregunta. 
   -- Controlamos el index de cada pregunta, para realizar diferentes gestiones con este. 
   -->
@@ -6,20 +7,43 @@
   <ion-card-header>
     <ion-card-title></ion-card-title>
   </ion-card-header>
-
   <ion-card-content>
     <!-- Por cada pregunta, mostramos las posibles respuestas de forma aleatoria.
-      -- Comprobamos si el array botonSeleccionadoPreguntaIndex incluye los index de los botones seleccionados,
-      -- para poner todas las respuestas de esas pregunta como disabled
-      -- Mediante [ngClass], ponemos el estilo "boton-seleccionado", a las respuestas que hemos seleccionado. 
-      -- Ejemplo: [ngClass]="{'boton-seleccionado': miCondicion}", donde "miCondicion" será true o false, 
-      -- dependiendo de si la respuesta está en el array respuestasSeleccionadas.
-      -- "boton-seleccionado" está declarado en preguntas.component.scss
-      -->
-    <ion-button>
+    -- Comprobamos si el array botonSeleccionadoPreguntaIndex incluye los index de los botones seleccionados,
+    -- para poner todas las respuestas de esas pregunta como disabled
+    -- Mediante [ngClass], ponemos el estilo "boton-seleccionado", a las respuestas que hemos seleccionado. 
+    -- Ejemplo: [ngClass]="{'boton-seleccionado': miCondicion}", donde "miCondicion" será true o false, 
+    -- dependiendo de si la respuesta está en el array respuestasSeleccionadas.
+    -- "boton-seleccionado" está declarado en preguntas.component.scss
+    -->
 
-    </ion-button>
+    <div>
+        <!-- Lista de preguntas -->
+        <div  *ngFor="let pregunta of listaPreguntas; let preguntaIndex = index">
+          <ion-label>
+            <h3 [innerHTML]="pregunta.question"></h3>
+          </ion-label>
+          <ion-list>
+        <ion-item *ngFor="let respuesta of pregunta.respuestasAleatorias; let respuestaIndex = index">
+            <ion-button 
+                (click)="seleccionarRespuesta(preguntaIndex, respuestaIndex)"
+                [disabled]="botonSeleccionadoPreguntaIndex.includes(preguntaIndex)"
+                [ngClass]="{'boton-seleccionado': respuestasSeleccionadas[preguntaIndex] === respuesta}"
+                >
+                <ion-label [innerHTML]="respuesta"></ion-label>
+            </ion-button>
+          </ion-item>
+          
+          </ion-list>
+        </div>
+    </div>
+
+
   </ion-card-content>
+</ion-card>
+<ion-card *ngIf="listaPreguntas.length === 0">
+  <ion-card-content>No hay preguntas disponibles</ion-card-content>
+
 </ion-card>
 <!-- Botonera -->
 <ion-row>
