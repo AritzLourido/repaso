@@ -26,7 +26,7 @@
           <ion-list>
         <ion-item *ngFor="let respuesta of pregunta.respuestasAleatorias; let respuestaIndex = index">
             <ion-button 
-                (click)="seleccionarRespuesta(preguntaIndex, respuestaIndex)"
+                (click)="seleccionarRespuesta(preguntaIndex, respuesta)"
                 [disabled]="botonSeleccionadoPreguntaIndex.includes(preguntaIndex)"
                 [ngClass]="{'boton-seleccionado': respuestasSeleccionadas[preguntaIndex] === respuesta}"
                 >
@@ -51,13 +51,19 @@
     <!-- El botón guardar resultados estará deshabilitado hasta que se hayan respondido todas las preguntas.
       -- Se puede hacer uso de la etiqueta [disabled]
       -->
-    <ion-button>
+    <ion-button
+      [disabled]="!comprobarGuardarResultados()"
+      (click)="guardarResultados()"
+      >
       Guardar Resultados
     </ion-button>
   </ion-col>
   <!-- El botón volver a jugar estará deshabilitado hasta que se haya pulsado el botón Guardar Resultados-->
   <ion-col  size="6">
-    <ion-button>
+    <ion-button
+      [disabled]="!comprobarVolverAJugar()"
+      (click)="volverAJugar()"
+    >
       Volver a jugar!
     </ion-button>
   </ion-col>

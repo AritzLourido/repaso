@@ -12,11 +12,11 @@ import { IonApp, IonicModule} from '@ionic/angular';
   declarations: [
     IntroduccionComponent,
     PreguntasComponent,
-    RankingComponent
+    RankingComponent,
   ],
   imports: [
     CommonModule,
-    IonicModule
+    IonicModule,
   ],
   exports: [
     IntroduccionComponent,

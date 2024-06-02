@@ -3,6 +3,8 @@ import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 //Añadir los imports necesarios
 import {Pregunta, PreguntasTodas} from './../../interfaces/interfaces'
+import { GestionStorageService } from 'src/app/services/gestion-storage.service';
+import { AlertController } from '@ionic/angular';
 
 @Component({
   selector: 'app-preguntas',
@@ -28,9 +30,10 @@ export class PreguntasComponent implements OnInit {
   botonSeleccionadoPreguntaIndex: number[] = [];
   //Gestionará el visualizado del botón Volver a Jugar.
   mostrarBotonesAdicionales: boolean = false;
+ 
 
  
-  constructor(private consultaRest: HttpClient) {
+  constructor(private consultaRest: HttpClient, private gestionStorage: GestionStorageService, private alertController: AlertController) {
 
 
   }
@@ -40,20 +43,28 @@ export class PreguntasComponent implements OnInit {
   }
 
   private cargarPreguntas() {
-    // Llamamos al API mediante un observable
-    let observableRest: Observable<any> = this.consultaRest.get<any>("https://opentdb.com/api.php?amount=10&difficulty=easy&type=multiple");
+    //Llamamos al API mediante un observable
+    //Suscripción al observable
+    let observableRest = this.consultaRest.get<PreguntasTodas>("https://opentdb.com/api.php?amount=10&difficulty=easy&type=multiple");
 
-    // Suscripción al observable
+    //Recorremos la lista de preguntas
     observableRest.subscribe((data: PreguntasTodas) => {
-      // Recorremos la lista de preguntas
-      data.results.forEach((pregunta: Pregunta) => {
-        // Mezclamos el orden del array
-        pregunta.respuestasAleatorias = this.mezclarOrdenArray([...pregunta.incorrect_answers, pregunta.correct_answer]);
-        // Añadimos la pregunta a la lista de preguntas
-        this.listaPreguntas.push(pregunta);
+      this.listaPreguntas = data.results.map(pregunta => {
+
+        /* Mezclamos el orden del array:
+          * Creamos un array con los 3 valores que vienen en "incorrect_answer" + la "correct_answer".
+          * Si vemos la interface, podemos observar que --> correct_answer: string; incorrect_answers: string[];
+        */
+        const respuestasAleatorias = this.mezclarOrdenArray([...pregunta.incorrect_answers, pregunta.correct_answer]);
+        /* Modificamos la interface para que pueda guardar un string[] de las respuestas ordenadas aleatoriamente.
+          * Con los valores que vienen en la API, rellenamos pregunta y a ello le añadimos respuestasAleatorias, para que 
+          * todos los valores de la interface estén rellenas.
+          */
+        return { ...pregunta, respuestasAleatorias };
       });
     });
-}
+  }
+
 
   //Este método se utiliza para mezclar el orden del array
   mezclarOrdenArray(array: any[]): any[] {
@@ -79,58 +90,83 @@ export class PreguntasComponent implements OnInit {
   /* Gestionará el click del botón
    * Tendrá que recibir los parámetros necesarios para cargar los array botonSeleccionadoPreguntaIndex y respuestasSeleccionadas
    */
-  seleccionarRespuesta(preguntaIndex: number, respuestaIndex: number) {
-    // Verificar si la respuesta ya fue seleccionada
-    if (!this.botonSeleccionadoPreguntaIndex.includes(preguntaIndex)) {
-      // Añadir el index de la pregunta a la lista de preguntas seleccionadas
-      this.botonSeleccionadoPreguntaIndex.push(preguntaIndex);
-    }
-  
-    // Obtener la pregunta actual
-    const pregunta = this.listaPreguntas[preguntaIndex];
-  
-    // Obtener la respuesta seleccionada
-    const respuestaSeleccionada = pregunta.respuestasAleatorias[respuestaIndex];
-  
-    // Guardar la respuesta seleccionada
-    this.respuestasSeleccionadas[preguntaIndex] = respuestaSeleccionada;
-
-    console.log("Respuesta seleccionada:" + respuestaSeleccionada);
+  seleccionarRespuesta(preguntaIndex: number, respuesta: string) {
+    this.respuestasSeleccionadas[preguntaIndex] = respuesta;
+    this.botonSeleccionadoPreguntaIndex.push(preguntaIndex);
+    this.deshabilitarBotones = true;
   }
   
 
-  // Método que gestiona la lógica para guardar resultados cuando se pulse dicho botón
-  guardarResultados() {
+  async guardarResultados() {
+    const respuestasCorrectas = this.listaPreguntas.map(pregunta => pregunta.correct_answer);
+    const contRespuestasCorrectas = this.respuestasSeleccionadas.filter((respuesta, index) => respuesta === respuestasCorrectas[index]).length;
 
+    await this.gestionStorage.setObject('respuestasSeleccionadas', this.respuestasSeleccionadas);
+    await this.gestionStorage.setObject('respuestasCorrectas', respuestasCorrectas);
+    await this.gestionStorage.setString('contRespuestasCorrectas', contRespuestasCorrectas.toString());
+
+    this.mostrarBotonesAdicionales = true;
+    console.log('Respuestas seleccionadas:', this.respuestasSeleccionadas);
+    console.log('Respuestas correctas:', respuestasCorrectas);
+    console.log('Cantidad de respuestas correctas:', contRespuestasCorrectas);
   }
-
   /* Una vez respondido todas las preguntas y al pulsar Guardar Resultados, 
    * Se realizará al conteo de aciertos y a guardar los valores en el Storage:
    * "respuestasSeleccionadas" --> Guardará las respuestas que se han seleccionado
    * "respuestasCorrectas" --> Guardará las respuestas correctas de cada pregunta, para luego comparar con las seleccionadas
    * "contRespuestasCorrectas" --> Guardará la cantidad de las respuestas correctas
    */
-  comprobarRespuestasCorrectas() {
-
+  async comprobarRespuestasCorrectas() {
+    const respuestasCorrectas = await this.gestionStorage.getArrayString('respuestasCorrectas');
+    const contRespuestasCorrectas = await this.gestionStorage.getString('contRespuestasCorrectas');
+    console.log('Comprobando respuestas correctas:', respuestasCorrectas);
+    console.log('Cantidad de respuestas correctas:', contRespuestasCorrectas.value);
   }
 
   // Se podrá hacer uso de este método para resetear los valores, cuando se quiera jugar una partida nueva
-  resetearValores(){
-    
+  resetearValores() {
+    this.listaPreguntas = [];
+    this.respuestasSeleccionadas = [];
+    this.respuestasAleatorias = [];
+    this.deshabilitarBotones = false;
+    this.botonSeleccionadoPreguntaIndex = [];
+    this.mostrarBotonesAdicionales = false;
   }
 
   // Gestión del alert para volver a jugar una partida.
   async volverAJugar() {
-    
+    const alert = await this.alertController.create({
+      header: 'Confirmación',
+      message: '¿Seguro que quieres volver a jugar?',
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel',
+          cssClass: 'secondary',
+          handler: () => {
+            console.log('Confirm Cancel: cancel');
+          }
+        }, {
+          text: 'Aceptar',
+          handler: () => {
+            this.resetearValores();
+            this.cargarPreguntas();
+            console.log('Volviendo a jugar, valores reseteados y nuevas preguntas cargadas.');
+          }
+        }
+      ]
+    });
+    await alert.present();
   }
 
-  //El botón "Volver a Jugar" estará disabled por defecto, este método gestionará el disabled(true/false) del botón
-  comprobarVolverAJugar(){
 
+  //El botón "Volver a Jugar" estará disabled por defecto, este método gestionará el disabled(true/false) del botón
+  comprobarVolverAJugar() {
+    return this.mostrarBotonesAdicionales;
   }
 
   //El botón "Guardar Resultados" estará disabled por defecto, este método gestionará el disabled(true/false) del botón
   comprobarGuardarResultados() {
-
+    return this.respuestasSeleccionadas.length === this.listaPreguntas.length;
   }
 }
