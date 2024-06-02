@@ -14,6 +14,7 @@ export class RankingComponent  implements OnInit {
   respuestasCorrectas: string[] = [];
   // Crear variable para guardar los valores guardados en el storage con el nombre "contRespuestasCorrectas"
   contRespuestasCorrectas: string = '';
+  
 
   constructor(private gestionStorage: GestionStorageService) {}
 
