@@ -6,9 +6,8 @@ import { Component } from '@angular/core';
   styleUrls: ['home.page.scss'],
 })
 export class HomePage {
-async segmentChanged($event: Event) {
-throw new Error('Method not implemented.');
-    await this.segment;
+  segmentChanged(event: any) {
+    this.segment = event.detail.value;
   }
 
   segment: string;
